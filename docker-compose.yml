@@ -1,0 +1,123 @@
+version: "3.3"
+
+services:
+  postgres_122:
+    container_name: postgres_122
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5122:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data_122:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    entrypoint: >
+      /bin/bash -c "
+      chmod +x /docker-entrypoint-initdb.d/*.sh;
+      docker-entrypoint.sh postgres;
+      "
+
+  postgres_123:
+    container_name: postgres_123
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5123:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data_123:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    entrypoint: >
+      /bin/bash -c "
+      chmod +x /docker-entrypoint-initdb.d/*.sh;
+      docker-entrypoint.sh postgres;
+      "
+
+  postgres_222:
+    container_name: postgres_222
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5222:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data_222:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    entrypoint: >
+      /bin/bash -c "
+      chmod +x /docker-entrypoint-initdb.d/*.sh;
+      docker-entrypoint.sh postgres;
+      "
+
+  postgres_223:
+    container_name: postgres_223
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5223:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data_223:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    entrypoint: >
+      /bin/bash -c "
+      chmod +x /docker-entrypoint-initdb.d/*.sh;
+      docker-entrypoint.sh postgres;
+      "
+
+  postgres_402:
+    container_name: postgres_402
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5402:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data_402:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    entrypoint: >
+      /bin/bash -c "
+      chmod +x /docker-entrypoint-initdb.d/*.sh;
+      docker-entrypoint.sh postgres;
+      "
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:latest
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "3141:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres_122
+      - postgres_123
+      - postgres_222
+      - postgres_223
+      - postgres_402
+
+volumes:
+  postgres_data_122:
+  postgres_data_123:
+  postgres_data_222:
+  postgres_data_223:
+  postgres_data_402:
+  pgadmin_data:
