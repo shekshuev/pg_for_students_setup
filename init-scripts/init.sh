@@ -3,6 +3,7 @@
 echo "kernel.shmmax=2147483648" >> /etc/sysctl.conf;
 echo "max_connections = 300" >> /var/lib/postgresql/data/postgresql.conf;
 echo "shared_buffers = 512" >> /var/lib/postgresql/data/postgresql.conf;
+echo "statement_timeout = 10000" >> /var/lib/postgresql/data/postgresql.conf;
 echo "host all all all scram-sha-256" >> /var/lib/postgresql/data/pg_hba.conf;
 echo "host all all 0.0.0.0/0 md5" >> /var/lib/postgresql/data/pg_hba.conf;
 echo "host all all ::/0 md5" >> /var/lib/postgresql/data/pg_hba.conf;
