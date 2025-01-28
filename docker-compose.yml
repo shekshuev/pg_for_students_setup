@@ -155,6 +155,39 @@ services:
       - .:/app
       - /app/node_modules
 
+  postgres_ecampus:
+    image: postgres:latest
+    container_name: postgres_ecampus
+    environment:
+      POSTGRES_DB: ${POSTGRES_ECAMPUS_DB}
+      POSTGRES_USER: ${POSTGRES_ECAMPUS_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_GOPHERTALK_PASSWORD}
+    ports:
+      - "5392:5432"
+    volumes:
+      - postgres_ecampus_data:/var/lib/postgresql/data
+
+  ecampus_app:
+    build:
+      context: https://github.com/shekshuev/ecampus.git#develop
+      args:
+        MIX_ENV: ${MIX_ENV}
+    container_name: ecampus_app
+    environment:
+      POSTGRES_DB: ${POSTGRES_ECAMPUS_DB}
+      POSTGRES_USER: ${POSTGRES_ECAMPUS_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_ECAMPUS_PASSWORD}
+      POSTGRES_PORT: ${POSTGRES_ECAMPUS_PORT}
+      POSTGRES_HOSTNAME: ${POSTGRES_ECAMPUS_HOSTNAME}
+      PHX_SERVER: ${PHX_SERVER}
+      MIX_ENV: ${MIX_ENV}
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+    ports:
+      - "4000:4000"
+    depends_on:
+      - postgres_ecampus
+
 volumes:
   postgres_data_323:
   postgres_data_324:
@@ -163,3 +196,4 @@ volumes:
   pgadmin_data:
   postgres_gophertalk_data:
   gophertalk_backend_migrations:
+  postgres_ecampus_data:
