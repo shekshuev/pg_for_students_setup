@@ -1,18 +1,18 @@
 version: "3.3"
 
 services:
-  postgres_122:
-    container_name: postgres_122
+  postgres_323:
+    container_name: postgres_323
     image: postgres:latest
     restart: always
     ports:
-      - "5122:5432"
+      - "5323:5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - postgres_data_122:/var/lib/postgresql/data
+      - postgres_data_323:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
     entrypoint: >
       /bin/bash -c "
@@ -20,18 +20,18 @@ services:
       docker-entrypoint.sh postgres;
       "
 
-  postgres_123:
-    container_name: postgres_123
+  postgres_324:
+    container_name: postgres_324
     image: postgres:latest
     restart: always
     ports:
-      - "5123:5432"
+      - "5324:5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - postgres_data_123:/var/lib/postgresql/data
+      - postgres_data_324:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
     entrypoint: >
       /bin/bash -c "
@@ -39,18 +39,18 @@ services:
       docker-entrypoint.sh postgres;
       "
 
-  postgres_222:
-    container_name: postgres_222
+  postgres_422:
+    container_name: postgres_422
     image: postgres:latest
     restart: always
     ports:
-      - "5222:5432"
+      - "5422:5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - postgres_data_222:/var/lib/postgresql/data
+      - postgres_data_422:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
     entrypoint: >
       /bin/bash -c "
@@ -58,37 +58,18 @@ services:
       docker-entrypoint.sh postgres;
       "
 
-  postgres_223:
-    container_name: postgres_223
+  postgres_423:
+    container_name: postgres_423
     image: postgres:latest
     restart: always
     ports:
-      - "5223:5432"
+      - "5423:5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - postgres_data_223:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d
-    entrypoint: >
-      /bin/bash -c "
-      chmod +x /docker-entrypoint-initdb.d/*.sh;
-      docker-entrypoint.sh postgres;
-      "
-
-  postgres_402:
-    container_name: postgres_402
-    image: postgres:latest
-    restart: always
-    ports:
-      - "5402:5432"
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - postgres_data_402:/var/lib/postgresql/data
+      - postgres_data_423:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
     entrypoint: >
       /bin/bash -c "
@@ -108,16 +89,74 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
-      - postgres_122
-      - postgres_123
-      - postgres_222
-      - postgres_223
-      - postgres_402
+      - postgres_323
+      - postgres_324
+      - postgres_422
+      - postgres_423
+
+  postgres_gophertalk:
+    image: postgres:latest
+    container_name: postgres_gophertalk
+    environment:
+      POSTGRES_DB: ${POSTGRES_GOPHERTALK_DB}
+      POSTGRES_USER: ${POSTGRES_GOPHERTALK_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_GOPHERTALK_PASSWORD}
+    ports:
+      - "5391:5432"
+    volumes:
+      - postgres_gophertalk_data:/var/lib/postgresql/data
+
+  postgres_gophertalk_migrate:
+    image: migrate/migrate
+    container_name: postgres_gophertalk_migrate
+    environment:
+      GOLANG_MIGRATE_POSTGRESQL_URL: ${GOLANG_MIGRATE_POSTGRESQL_URL}
+    volumes:
+      - ./internal/migrations:/migrations
+    command:
+      [
+        "-path",
+        "/migrations",
+        "-database",
+        "${GOLANG_MIGRATE_POSTGRESQL_URL}",
+        "up",
+      ]
+    depends_on:
+      - postgres_gophertalk
+
+  gophertalk_backend:
+    build:
+      context: https://github.com/shekshuev/gophertalk-backend.git#develop
+    container_name: gophertalk_backend
+    environment:
+      DATABASE_DSN: ${DATABASE_DSN}
+      SERVER_ADDRESS: ${SERVER_ADDRESS}
+      ACCESS_TOKEN_EXPIRES: ${ACCESS_TOKEN_EXPIRES}
+      REFRESH_TOKEN_EXPIRES: ${REFRESH_TOKEN_EXPIRES}
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
+      REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres_gophertalk_migrate
+
+  gophertalk-frontend:
+    build:
+      context: https://github.com/shekshuev/gophertalk-frontend.git#main
+      args:
+        VITE_APP_API_URL: ${VITE_APP_API_URL}
+    ports:
+      - "8080:80"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
 
 volumes:
-  postgres_data_122:
-  postgres_data_123:
-  postgres_data_222:
-  postgres_data_223:
-  postgres_data_402:
+  postgres_data_323:
+  postgres_data_324:
+  postgres_data_422:
+  postgres_data_423:
   pgadmin_data:
+  postgres_gophertalk_data:
