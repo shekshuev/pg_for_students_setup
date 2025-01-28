@@ -169,7 +169,7 @@ services:
 
   ecampus_app:
     build:
-      context: https://github.com/shekshuev/ecampus.git#develop
+      context: https://github.com/shekshuev/ecampus.git#main
       args:
         MIX_ENV: ${MIX_ENV}
     container_name: ecampus_app
