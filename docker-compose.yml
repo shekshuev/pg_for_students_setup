@@ -189,7 +189,7 @@ services:
     depends_on:
       - postgres_ecampus
     volumes:
-      - ./ecampus-static:/app/lib/ecampus-0.1.0/priv/static
+      - ./ecampus-uploads:/app/lib/ecampus-0.1.0/priv/static/uploads
 
 volumes:
   postgres_data_323:
