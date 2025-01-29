@@ -147,6 +147,7 @@ services:
       context: https://github.com/shekshuev/gophertalk-frontend.git#main
       args:
         VITE_APP_API_URL: ${VITE_APP_API_URL}
+        VITE_APP_DEFAULT_LOCALE: ${VITE_APP_DEFAULT_LOCALE}
     ports:
       - "8080:80"
     env_file:
@@ -187,6 +188,8 @@ services:
       - "4000:4000"
     depends_on:
       - postgres_ecampus
+    volumes:
+      - ./ecampus-static:/app/lib/ecampus-0.1.0/priv/static
 
 volumes:
   postgres_data_323:
